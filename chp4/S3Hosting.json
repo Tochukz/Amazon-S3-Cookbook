@@ -1,0 +1,68 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "AWS CloudFormation Template for S3 Static Website",
+  "Parameters": {
+    "HostingBucketName": {
+      "Type" : "String",
+      "Description": "S3 Bucket Name for Static Website",
+      "Default" : "your_website_bucket"
+    },
+    "LoggingBucketName": {
+      "Type" : "String",
+      "Description": "S3 Bucket Name for Server Access Logging",
+      "Default" : "your_logging_bucket"
+    }
+  },
+  "Resources" : {
+    "HostingBucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "BucketName" : { "Ref" : "HostingBucketName" },
+        "AccessControl": "PublicRead",
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        },
+        "LoggingConfiguration": {
+          "DestinationBucketName": { "Ref" : "LoggingBucketName" },
+          "LogFilePrefix": "logs/"
+        }
+      }
+    },
+    "LoggingBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName" : { "Ref" : "LoggingBucketName" },
+        "AccessControl": "LogDeliveryWrite"
+      }
+    },
+    "HostingBucketPolicy" : {
+      "Type" : "AWS::S3::BucketPolicy",
+      "Properties" : {
+        "PolicyDocument" : {
+          "Version" : "2012-10-17",
+          "Id" : "PublicReadGet",
+          "Statement" : [ {
+            "Sid" : "ReadAccess",
+            "Action" : [ "s3:GetObject" ],
+            "Effect" : "Allow",
+            "Resource" : { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "HostingBucket" } , "/*" ] ] },
+            "Principal" : "*"
+          } ]
+        },
+        "Bucket" : { "Ref" : "HostingBucket" }
+      }
+    }
+  },
+  "Outputs" : {
+    "S3HostingBucketEndpoint" : {
+      "Value" : { "Fn::Join" : ["", [ "https://", { "Ref" : "HostingBucket" }, ".s3.amazonaws.com/" ] ] }
+    },
+    "S3HostingBucketName" : {
+      "Value" : { "Ref" : "HostingBucket" }
+    },
+    "ServerAccessLoggingBucketName" : {
+      "Value" : { "Ref" : "LoggingBucket" }
+    }
+  }
+}
