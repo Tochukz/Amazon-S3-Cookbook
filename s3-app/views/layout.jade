@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet' href='/css/bootstrap.4-3-1.min.css')
+    link(rel='stylesheet' href='/css/font-awesome.4-7-0.min.css')
+    link(rel='stylesheet', href='/css/style.css')
+    script(src='/js/jquery-3.2.1.min')
+    script(src='/js/main.js')
+  body
+    .container
+      .row 
+        .col-sm-12
+          ul.list-inline
+            li.list-inline-item
+              a.btn.btn-small.btn-primary(href='/')  Home
+            li.list-inline-item
+              a.btn.btn-small.btn-primary(href='/file-ops') File Ops
+    block content

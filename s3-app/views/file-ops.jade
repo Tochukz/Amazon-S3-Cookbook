@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .container 
+    .row 
+      .col-sm-12
+        h1= title
+        p AWS S3 #{title}
+        .alert.alert-danger Error Message
+      .col-sm-6
+        .form-inline
+          input(type='file' class='form-control')
+          button(class='btn btn-primary' onclick='uploadFile') Upload to S3
+      .col-sm-6
