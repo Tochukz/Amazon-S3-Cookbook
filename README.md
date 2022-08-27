@@ -9,6 +9,23 @@ To install and use AWS CLI you need:
 * Python 2.7 or later  
 * pip  
 
+__Commonly used S3 CLI Commands__  
+
+ Operation                       | Commands
+ --------------------------------|-----------
+ create new bucket               | `aws s3 mb s3://bucket-name`
+ list buckets                    | `aws s3 ls`
+ list objects in a bucket        | `aws s3 ls bucket-name`  
+ list object with a given prefix | `aws s3api list-objects-v2 --bucket bucket-name --prefix my-prefix`
+ copy file to bucket             | `aws s3 cp filename.png s3://bucket-name`  
+ rename file in bucket           | `aws s3 mv s3://bucket-name/oldname.png s3://bucket-name/newname.png`
+ access bucket policy            | `aws s3api get-bucket-policy --bucket bucket-name`  
+ attach bucket policy            | `aws s3api put-bucket-policy --bucket bucket-name --policy file://policy.json` 
+ access bucket's CORS config     | `aws s3api get-bucket-cors --bucket bucket-name`
+ attach bucket CORS config       | `aws s3api put-bucket-cors --bucket bucket-name --cors-configuration file://cors.json`
+ delete object in bucket         | `aws s3 rm s3://bucket-name/filename.png`
+ delete bucket                   | `aws s3 rb s3://bucket-name`
+
 ## Chapter 1: Managing Common Operations with AWS SDKs  
 To get started with AWS SDKs see [AWS Developers](https://aws.amazon.com/developers/getting-started/)  
 
@@ -36,7 +53,7 @@ To generate credential via the CLI, do
 ```
 > aws configure
 ```  
-Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_. 
+Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_.
 [Learn more](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
 
 To learn about AWS CLI commands see [AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)
@@ -300,7 +317,7 @@ __Step to configure a CloudFront distribution on the Amazon S3 bucket__
 3. Store your content on the S3 bucket.  
 4. You can add more origins to your CloudFront distribution later.  
 
-After creating a CloodFront web distribution, the distribution will be available within the next 15 minutes. The users will receive the content through the closest edge location, not directly from the configures s3 bucket.  
+After creating a CloudFront web distribution, the distribution will be available within the next 15 minutes. The users will receive the content through the closest edge location, not directly from the configures s3 bucket.  
 
 __How to configure a CloudFront distribution on the Amazon S3 bucket__
 1. Sign in to your AWS management console and go to the CloudFront section.  
@@ -363,3 +380,5 @@ To learn more about changing the cache behavior, checkout [CloudFront Developer 
 [CloudFront Pricing](https://aws.amazon.com/cloudfront/pricing/)  
 [CloudFront CNAMEs](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html)  
 [CloudFront Custom SSL](https://aws.amazon.com/cloudfront/custom-ssl-domains/)
+
+## Chapter 6: Securing Resources with Bucket Policies and IAM
