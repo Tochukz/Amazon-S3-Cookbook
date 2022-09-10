@@ -4,5 +4,17 @@ body {
   a {
     color: #00B7FF
   }
+  .file-name {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .col-sm-6 {
+    margin-bottom: 1.5em;
+  }
+  iframe {
+    width: 100%;
+    height: auto;
+    border: solid silver 1px;
+  }
 }
 

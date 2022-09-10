@@ -1,14 +1,28 @@
 extends layout
 
 block content
-  .container 
+  .container-fluid 
     .row 
       .col-sm-12
         h1= title
         p AWS S3 #{title}
-        .alert.alert-danger Error Message
+        div(class='alert' id='alert' style='display:none') Error Message
       .col-sm-6
         .form-inline
-          input(type='file' class='form-control')
-          button(class='btn btn-primary' onclick='uploadFile') Upload to S3
+          input(type='file' class='form-control' id="file1" onchange="checkForFile(event)")
+          button(class='btn btn-primary' onclick="uploadToS3('file1')") Upload to S3
       .col-sm-6
+        <h3>Selected File</h3>
+      .col-sm-6
+        table(class='table')
+          thead 
+            tr 
+              th Name 
+              th Size 
+              th Last Modified 
+          tbody(id='tbody')
+      .col-sm-6 
+        iframe#frame
+
+          
+        

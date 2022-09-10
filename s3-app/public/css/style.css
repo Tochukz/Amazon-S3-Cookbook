@@ -3,5 +3,14 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; }
   body a {
     color: #00B7FF; }
+  body .file-name {
+    text-decoration: underline;
+    cursor: pointer; }
+  body .col-sm-6 {
+    margin-bottom: 1.5em; }
+  body iframe {
+    width: 100%;
+    height: auto;
+    border: solid silver 1px; }
 
 /*# sourceMappingURL=style.css.map */

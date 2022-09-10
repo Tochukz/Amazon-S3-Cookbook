@@ -382,3 +382,8 @@ To learn more about changing the cache behavior, checkout [CloudFront Developer 
 [CloudFront Custom SSL](https://aws.amazon.com/cloudfront/custom-ssl-domains/)
 
 ## Chapter 6: Securing Resources with Bucket Policies and IAM
+
+
+## Express App with AWS S3 
+[AWS SDK V3 API Reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/)  
+[AWS SDK V3 Repo](https://github.com/aws/aws-sdk-js-v3)
