@@ -25,8 +25,8 @@ class FileService {
     return params;
   }
 
-  async listFiles(Prefix) {
-    const params = this.getParams();
+  async listFiles() {
+    const Prefix = 'S3App-uploads';
     return new Promise((resolve, reject) => {
       this.s3.listObjects({ Bucket: S3_BUCKET, Prefix }, (err, data) => {
         if (err) {
@@ -52,7 +52,7 @@ class FileService {
 
   getFileExt(type) {
     let ext = '';
-    if (file.type == 'application/pdf') {
+    if (type == 'application/pdf') {
       ext = 'pdf';
     } else if (type == 'text/csv') {
       ext = 'csv';
@@ -65,9 +65,12 @@ class FileService {
   }
 
   async getMultiPresingedUrl(files, prefix) {
-    for(let file in files) {
-      const ext = getFileExt(file.type);
-      const key = `${prefix}/${file.name}.${ext}`;
+    for(let file of files) {
+      const ext = this.getFileExt(file.type);
+      const prefix = 'S3App-uploads';
+      const filename = file.name
+      const nameOnly = file.name.substring(0, filename.lastIndexOf('.'));
+      const key = `${prefix}/${nameOnly}.${ext}`;
       const result = await this.getPresignedUrl(key, file.type);
       file.ext = ext;
       file.url = key;

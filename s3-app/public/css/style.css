@@ -11,6 +11,7 @@ body {
   body iframe {
     width: 100%;
     height: auto;
-    border: solid silver 1px; }
+    border: solid silver 1px;
+    min-height: 70vh; }
 
 /*# sourceMappingURL=style.css.map */

@@ -36,8 +36,24 @@ router.get('/signed-url', async function(req, res, next)  {
   }
 });
 
-router.post('/presign-url', function(req, res, next) {
-  res.json({ results: 'results'});
+router.post('/presign-url', async function(req, res, next) {
+  try {
+  const { files } = req.body;
+
+  if (!Array.isArray(files)) {
+    const message = 'files must be an array file object';
+    return res.status(400).json({ message });
+  }
+  if (files.some(file => !file.name || !file.type || !file.size)) {
+    const message = 'Each file object must have a name and type and size';
+    return res.status(400).json({ message });
+  }
+
+  const result = await fileService.getMultiPresingedUrl(files);
+  res.status(201).json(result);
+  } catch(err) {
+    next(err);
+  }
 });
 
 module.exports = router;
