@@ -20,7 +20,8 @@ __Commonly used S3 CLI Commands__
  copy file to bucket             | `aws s3 cp filename.png s3://bucket-name`  
  rename file in bucket           | `aws s3 mv s3://bucket-name/oldname.png s3://bucket-name/newname.png`
  access bucket policy            | `aws s3api get-bucket-policy --bucket bucket-name`  
- attach bucket policy            | `aws s3api put-bucket-policy --bucket bucket-name --policy file://policy.json` 
+ attach bucket policy            | `aws s3api put-bucket-policy --bucket bucket-name --policy file://policy.json`
+ delete bucket policy            | `aws s3api delete-bucket-policy --bucket bucket-name`
  access bucket's CORS config     | `aws s3api get-bucket-cors --bucket bucket-name`
  attach bucket CORS config       | `aws s3api put-bucket-cors --bucket bucket-name --cors-configuration file://cors.json`
  delete object in bucket         | `aws s3 rm s3://bucket-name/filename.png`
@@ -304,12 +305,8 @@ __Learn more__
 * [Sample Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-sample-templates.html)  
 
 ## Chapter 5: Distributing Your Contents via CloudFront  
-Amazon _CloudFront_ CDN is a content delivery service that is used to speed up the distribution of your static and dynamic content, for example, _.html_, _.css_, _.php_, image filed and streaming media to the end users. CloudFront delivers your content stored in origin servers such as Amazon S3 bucket or web servers through global network data centers called edge locations all
-over the world.  
-All you need to do is create a CloudFront distribution to define your origin server,
-cache behavior settings, and distribution settings, and store your content in the origin server, so
-that CloudFront distributes the configuration to CloudFront edge locations and adds the cache in
-the edge locations.
+Amazon _CloudFront_ CDN is a content delivery service that is used to speed up the distribution of your static and dynamic content, for example, _.html_, _.css_, _.php_, image files and streaming media to the end users. CloudFront delivers your content stored in origin servers such as Amazon S3 bucket or web servers through global network data centres called edge locations all over the world.  
+All you need to do is create a CloudFront distribution to define your origin server, cache behavior settings, and distribution settings, and store your content in the origin server, so that CloudFront distributes the configuration to CloudFront edge locations and adds the cache in the edge locations.
 
 __Step to configure a CloudFront distribution on the Amazon S3 bucket__   
 1. Create a S3 bucket  
@@ -322,7 +319,7 @@ After creating a CloudFront web distribution, the distribution will be available
 __How to configure a CloudFront distribution on the Amazon S3 bucket__
 1. Sign in to your AWS management console and go to the CloudFront section.  
 2. Click on The __Create Distribution__ button  
-3. Under `Origin Domina Name`, select the S3 bucket that you want to use as the origin server. Make sure your S3 bucket is publicly accessable.
+3. Under `Origin Domain Name`, select the S3 bucket that you want to use as the origin server. Make sure your S3 bucket is publicly accessible.
 4. You may use the default settings under the `Origin Settings` and `Default Cache Behavior Settings` sections of the form.  
 5. Take note of the `Price` class option in the `Distribution Settings` section and select the value that best suits your pocket.
 6. You can specify your domain name under `Alternate Domain Names (CNAMEs)` if you want to use your own domain name. To learn more, see [CNAME DeveloperGuide](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html)  
@@ -369,6 +366,10 @@ To use you custom domain (e.g http://images.mydomain.com) instead of cloudFront 
 5. Enter your record name, select the `A` record type, switch on the `Alias` option and select `Alias to CloudFront distibution`, select you CloudFront Distribution and click on the save button.  
 6. You should now be able to access your cloud front distribution using you custom domain.
 
+__To configure Cloudfront distribution using AWS CLI__   
+See chp5/cloudfront.sh  
+[Learn more](https://aws-blog.io/2015/create-cloudfront-distribution/)
+
 __Amazon CloudFront limits or Quotas__  
 AWS service limits exists by default. If you expect more than the default limit value for one of the resources (for example, you need more bandwidth for an event next week), you can create a case to request a higher limit via AWS support dashboard. See [AWS service quotas](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits_cloudfront)
 
@@ -384,6 +385,6 @@ To learn more about changing the cache behavior, checkout [CloudFront Developer 
 ## Chapter 6: Securing Resources with Bucket Policies and IAM
 
 
-## Express App with AWS S3 
+## Express App with AWS S3
 [AWS SDK V3 API Reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/)  
 [AWS SDK V3 Repo](https://github.com/aws/aws-sdk-js-v3)

@@ -1,0 +1,111 @@
+{
+    "CallerReference": "Tue, 13 Sep 2022 06:20:38 GMT",
+    "Aliases": {
+        "Quantity": 1,
+        "Items": [
+            "ecommerce.tochukwu.xyz"
+        ]
+    },
+    "DefaultRootObject": "index.html",
+    "Origins": {
+        "Quantity": 1,
+        "Items": [
+            {
+                "Id": "cf-site-bucket.s3.eu-west-2.amazonaws.com",
+                "DomainName": "cf-site-bucket.s3.eu-west-2.amazonaws.com",
+                "OriginPath": "",
+                "CustomHeaders": {
+                    "Quantity": 0,
+                    "Items": [
+                        {
+                            "HeaderName": "",
+                            "HeaderValue": ""
+                        }
+                    ]
+                },
+                "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 433,
+                    "OriginProtocolPolicy": "https-only",
+                    "OriginSslProtocols": {
+                        "Quantity": 1,
+                        "Items": [
+                            "TLSv1.1"
+                        ]
+                    },
+                    "OriginReadTimeout": 0,
+                    "OriginKeepaliveTimeout": 0
+                },
+                "ConnectionAttempts": 0,
+                "ConnectionTimeout": 0,
+                "OriginShield": {
+                    "Enabled": true,
+                    "OriginShieldRegion": "eu-west-2"
+                }
+            }
+        ]
+    },
+    "OriginGroups": {
+        "Quantity": 0
+    },
+    "DefaultCacheBehavior" : {
+        "AllowedMethods" : {
+           "Quantity": 7,
+           "Items": [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ]
+        },
+        "TargetOriginId" : "cf-site-bucket.s3.eu-west-2.amazonaws.com",
+        "ForwardedValues" : {
+            "QueryString" : false,
+            "Cookies" : { "Forward" : "none" }
+        },
+        "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+        },
+        "ViewerProtocolPolicy" : "allow-all"
+    },
+    "CacheBehaviors": {
+        "Quantity": 0
+    },
+    "CustomErrorResponses": {
+        "Quantity": 0,
+        "Items": [
+            {
+                "ErrorCode": 0,
+                "ResponsePagePath": "",
+                "ResponseCode": "",
+                "ErrorCachingMinTTL": 0
+            }
+        ]
+    },
+    "Comment": "Distribution config for my react app",
+    "Logging": {
+        "Enabled": false,
+        "IncludeCookies": true,
+        "Bucket": "",
+        "Prefix": ""
+    },
+    "PriceClass": "PriceClass_200",
+    "Enabled": true,
+    "ViewerCertificate": {
+        "CloudFrontDefaultCertificate": true,
+        "IAMCertificateId": "",
+        "ACMCertificateArn": "",
+        "SSLSupportMethod": "vip",
+        "MinimumProtocolVersion": "TLSv1.2_2018",
+        "Certificate": "",
+        "CertificateSource": "acm"
+    },
+    "Restrictions": {
+        "GeoRestriction": {
+            "RestrictionType": "whitelist",
+            "Quantity": 0,
+            "Items": [
+                ""
+            ]
+        }
+    },
+    "WebACLId": "",
+    "HttpVersion": "http1.1",
+    "IsIPV6Enabled": true
+}
