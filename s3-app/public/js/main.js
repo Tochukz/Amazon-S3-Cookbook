@@ -20,6 +20,9 @@ async function loadFiles() {
           <td class="file-name" onclick="displayFile('${file.key}')">${file.key}</td>
           <td>${file.size}</td>
           <td>${file.lastModified}</td>
+          <td>
+            <i class="fa fa-trash" onclick="deleteFile('${file.key}')"></i>
+          </td>
         </tr>
       `);
     }); 
@@ -42,6 +45,16 @@ async function displayFile(fileKey) {
     $('#frame').attr('src', signedUrl)
   } catch(err) {
     console.error(err);
+  }
+}
+
+async function deleteFile(fileKey) {
+  const bits = fileKey.split('/');
+  const filename = bits[bits.length-1];
+  const yesDelete = confirm(`Are you sure you want to delete ${filename}`);
+  if (yesDelete) {
+    console.log('deleting');
+    //Todo: Implement delete operation 
   }
 }
 

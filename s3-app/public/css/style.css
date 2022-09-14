@@ -13,5 +13,7 @@ body {
     height: auto;
     border: solid silver 1px;
     min-height: 70vh; }
+  body i.fa {
+    cursor: pointer; }
 
 /*# sourceMappingURL=style.css.map */
