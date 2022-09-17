@@ -137,7 +137,7 @@ __How to configure S3 server access logging__
 Note that storing log objects and accessing log objects are charged in the same way as S3 storage and data transfer pricing.  
 If you want to regularly delete log objects you can manage the life cycle of objects by using life cycle rules.  
 
-__How to configure a static website suing a custom domain__  
+__How to configure a static website using a custom domain__  
 To configure a website with your domain you need to
 1. Create an S3 buckets, namely `<your_domain>` or `<your_subdomain>.<your_domain>` e.g `blog.tochukwu.xyz`.
 2. Configure the bucket for static website hosting and upload your files as describe earlier above.
@@ -154,7 +154,7 @@ You can have  `www` subdomain redirected to you site e.g `www.example.com` -> `e
 5. Create a record and use `www.example.com` as the record name just like you did in step 5 above
 6. After sometime request to `www.example.com` will start redirecting to `example.com`
 
-__How to configure a static website on Amazon S3 bucker with AWS CLI__    
+__How to configure a static website on Amazon S3 bucket with AWS CLI__    
 First, you have to install the AWS CLI.
 * For window, download the MSI installer at [awscli.amazonaws.com/AWSCLIV2.msi](https://awscli.amazonaws.com/AWSCLIV2.msi) and run the installer.
 

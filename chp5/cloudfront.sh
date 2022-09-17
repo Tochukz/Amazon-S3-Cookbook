@@ -50,7 +50,7 @@ cp sample-conf.json dist-config.json
 # CacheBehaviors.Items
 
 # Create the cloudfront distribution
-aws cloudfront create-distribution --distribution-config file://dist-config.json
+aws cloudfront create-distribution --distribution-config file://config/dist-config.json
 
 # Inspect all your distributions
 aws cloudfront list-distributions

@@ -8,7 +8,7 @@
                 "AWS": "*"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::cf-site-bucket/*"
+            "Resource": "arn:aws:s3:::cf-site-dev-bucket/*"
         }
     ]
 }

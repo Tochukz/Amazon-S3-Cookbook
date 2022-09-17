@@ -1,27 +1,19 @@
 {
     "CallerReference": "Tue, 13 Sep 2022 06:20:38 GMT",
     "Aliases": {
-        "Quantity": 1,
-        "Items": [
-            "ecommerce.tochukwu.xyz"
-        ]
+        "Quantity": 0,
+        "Items": []
     },
     "DefaultRootObject": "index.html",
     "Origins": {
         "Quantity": 1,
         "Items": [
             {
-                "Id": "cf-site-bucket.s3.eu-west-2.amazonaws.com",
-                "DomainName": "cf-site-bucket.s3.eu-west-2.amazonaws.com",
+                "Id": "CFSiteDevBucket",
+                "DomainName": "cf-site-dev-bucket.s3.eu-west-2.amazonaws.com",
                 "OriginPath": "",
                 "CustomHeaders": {
-                    "Quantity": 0,
-                    "Items": [
-                        {
-                            "HeaderName": "",
-                            "HeaderValue": ""
-                        }
-                    ]
+                    "Quantity": 0
                 },
                 "CustomOriginConfig": {
                     "HTTPPort": 80,
@@ -36,10 +28,10 @@
                     "OriginReadTimeout": 0,
                     "OriginKeepaliveTimeout": 0
                 },
-                "ConnectionAttempts": 0,
-                "ConnectionTimeout": 0,
+                "ConnectionAttempts": 3,
+                "ConnectionTimeout": 10,
                 "OriginShield": {
-                    "Enabled": true,
+                    "Enabled": false,
                     "OriginShieldRegion": "eu-west-2"
                 }
             }
@@ -50,10 +42,10 @@
     },
     "DefaultCacheBehavior" : {
         "AllowedMethods" : {
-           "Quantity": 7,
-           "Items": [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ]
+           "Quantity": 2,
+           "Items": [ "GET", "HEAD" ]
         },
-        "TargetOriginId" : "cf-site-bucket.s3.eu-west-2.amazonaws.com",
+        "TargetOriginId" : "CFSiteDevBucket",
         "ForwardedValues" : {
             "QueryString" : false,
             "Cookies" : { "Forward" : "none" }
@@ -68,12 +60,12 @@
         "Quantity": 0
     },
     "CustomErrorResponses": {
-        "Quantity": 0,
+        "Quantity": 1,
         "Items": [
             {
-                "ErrorCode": 0,
-                "ResponsePagePath": "",
-                "ResponseCode": "",
+                "ErrorCode": 403,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
                 "ErrorCachingMinTTL": 0
             }
         ]
@@ -98,7 +90,7 @@
     },
     "Restrictions": {
         "GeoRestriction": {
-            "RestrictionType": "whitelist",
+            "RestrictionType": "none",
             "Quantity": 0,
             "Items": [
                 ""
@@ -106,6 +98,6 @@
         }
     },
     "WebACLId": "",
-    "HttpVersion": "http1.1",
+    "HttpVersion": "http2",
     "IsIPV6Enabled": true
 }
