@@ -17,6 +17,7 @@ __Commonly used S3 CLI Commands__
  list buckets                    | `aws s3 ls`
  list objects in a bucket        | `aws s3 ls bucket-name`  
  list object with a given prefix | `aws s3api list-objects-v2 --bucket bucket-name --prefix my-prefix`
+ Download object                 | `aws s3api get-object --bucket bucket-name --key filename filename.ext` 
  copy file to bucket             | `aws s3 cp filename.png s3://bucket-name`  
  rename file in bucket           | `aws s3 mv s3://bucket-name/oldname.png s3://bucket-name/newname.png`
  access bucket policy            | `aws s3api get-bucket-policy --bucket bucket-name`  
