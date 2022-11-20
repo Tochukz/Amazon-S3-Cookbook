@@ -58,7 +58,19 @@ To generate credential via the CLI, do
 Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_.
 [Learn more](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
 
+__Set Auto-prompt__  
+To enable auto-prompt on AWS CLI V2, append the following settings to `~/.aws/config`
+```
+cli_auto_prompt = on-partial
+```
+Or set it using the `aws configure` command 
+```
+$ aws configure set cli_auto_prompt on-partial
+```  
+After this is set, you can press the _enter button_ while typing a command to get auto suggestions. You can then use the _arrow key_ to select a given suggestion in the list.  Press _F3 button_ to show docs about the command you have typed. 
+
 To learn about AWS CLI commands see [AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)
+
 ## Chapter 2: Hosting a Static Website on Amazon S3 Bucket  
 [S3 Pricing](https://aws.amazon.com/s3/pricing/)  
  To host a static website on Amazon S3:
