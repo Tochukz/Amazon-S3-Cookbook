@@ -40,7 +40,13 @@ class FileService {
         if (err) {
           reject(err);
         } else {
-          resolve(data);
+          let files = []
+          if (data.Contents) {
+            const {Prefix, Contents} = data;
+            const prefix = Prefix + '/'
+            files = Contents.map(item => ({name: item.Key.replace(prefix, ''), lastModified: item.LastModified, size: item.Size}))           
+          }
+          resolve(files);
         }
       });
     });
@@ -49,7 +55,8 @@ class FileService {
   /**
    * Generates signed URL to access a specific existing file
    */
-  async getSignedUrl(Key) {
+  async getSignedUrl(name) {
+    const Key = `${Prefix}/${name}`;
     const params = this.getParams({ Key });
     const signedUrl = await this.s3.getSignedUrlPromise('getObject', params);
     return { signedUrl };
@@ -81,7 +88,7 @@ class FileService {
   }
 
   getKey(file) {
-    const { name, size, type} = file;
+    const { name, type} = file;
     const ext = this.getFileExt(type);
     const nameOnly = name.substring(0, name.lastIndexOf('.'));
     return `${Prefix}/${nameOnly}.${ext}`
@@ -91,7 +98,7 @@ class FileService {
     for(let file of files) {
       const key = this.getKey(file)
       const result = await this.getPresignedUrl(key, file.type);
-      file.ext = ext;
+      file.ext = this.getFileExt(file.type);;
       file.url = key;
       // Save filename to database
       file.signedUrl = result.signedUrl
@@ -155,6 +162,20 @@ class FileService {
         resolve(data);
       });
     })    
+  }
+
+  async deleteFile(fileName){
+    const key = `${Prefix}/${fileName}`
+    const params = this.getParams({ Key: key });
+    delete params.Expires;
+    return new Promise((resolve, reject) => {
+      this.s3.deleteObject(params, (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      })
+    });
   }
 }
 

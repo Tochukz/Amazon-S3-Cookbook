@@ -1,24 +1,34 @@
+$(document).ready(() => {
+  $('#loading-div').slideUp();
+})
+
 function elem(id) {
   return document.getElementById(id);
 }
 
-function getFileName(filePath) {
-  const bits = filePath.split("/");
-  return bits[bits.length-1];
-}
-
 function displayError(response) {
   const { statusText, url, message} = response;
-  $(".alert").html(`<p>${url}</p><p>${ message || statusText}</p>`)
+  const urlParagraph = url ? `<p>${url}</p>` : '';
+  $(".alert").html(`${urlParagraph}<p>${ message || statusText}</p>`)
   $(".alert").addClass('alert-danger')
   $(".alert").slideDown();
   console.error(response);
+}
+
+function diplaySuccess(message) {
+  $('#alert').removeClass('alert-danger')
+             .addClass('alert-success')
+             .html(`<p>${message}<p>`)
+            .slideDown();
 }
 
 function hideError() {
   $(".alert").slideUp();
 }
 
+/**
+ * Fetch list of files for the API and display them in a table
+ */
 async function loadFiles() {
   try {
     const response = await fetch('/file-operations/files');    
@@ -34,14 +44,14 @@ async function loadFiles() {
     files.forEach(file => {
       $('#tbody').append(`
         <tr> 
-          <td class="file-name" onclick="displayFile('${file.key}')">${getFileName(file.key)}</td>
+          <td class="file-name" onclick="displayFile('${file.name}')">${file.name}</td>
           <td class="file-name">
-            <button class="btn btn-primary btn-sm" onclick="displayFile('${file.key}')">Display</button>
+            <button class="btn btn-primary btn-sm" onclick="displayFile('${file.name}')">Display</button>
           </td>
           <td>${file.size}</td>
           <td>${file.lastModified}</td>
           <td>
-            <i class="fa fa-trash" onclick="deleteFile('${file.key}')"></i>
+            <i class="fa fa-trash" onclick="deleteFile('${file.name}')"></i>
           </td>
         </tr>
       `);
@@ -51,6 +61,9 @@ async function loadFiles() {
   }
 }
 
+/**
+ * Check if file exist in event object
+ */
 function checkForFile(event) {
   const files = event.target.files;
   if (files.length ) {
@@ -58,9 +71,12 @@ function checkForFile(event) {
   }
 }
 
-async function displayFile(fileKey) {
+/**
+ * Request for a file given its name. Display the file in iframe
+ */
+async function displayFile(fileName) {
   try {
-    const res = await fetch(`/file-operations/signed-url?key=${fileKey}`);
+    const res = await fetch(`/file-operations/signed-url?name=${fileName}`);
     const { signedUrl } = await res.json();
     $('#frame').attr('src', signedUrl)
   } catch(err) {
@@ -68,18 +84,30 @@ async function displayFile(fileKey) {
   }
 }
 
-async function deleteFile(fileKey) {
-  const bits = fileKey.split('/');
-  const filename = bits[bits.length-1];
-  const yesDelete = confirm(`Are you sure you want to delete ${filename}`);
+/**
+ * Get a presign url to delete file and delete the file 
+ */
+async function deleteFile(fileName) {
+  const yesDelete = confirm(`Are you sure you want to delete ${fileName}`);
   if (yesDelete) {
-    console.log('deleting');
-    //Todo: Implement delete operation 
+    const response = await fetch(`/file-operations/delete-file/${fileName}`, {
+      method: 'DELETE',          
+    });
+    if (response.status != 204) {
+      displayError(response);
+      return;
+    }   
+    loadFiles();
   }
 }
 
+/**
+ * Get presigned URL to upload multiple files and upload the files to S3
+ */
 async function uploadToS3(fileId) {
-  $('#alert').hide();
+  hideError();
+  $('#button-div').slideUp();
+  $('#loading-div').slideDown();
   const fileInput1 = elem('file1');
   const fileInput2 = elem('file2');
   const fileInput3 = elem('file3');
@@ -114,16 +142,19 @@ async function uploadToS3(fileId) {
         n++;
       }
     }
-    $('#alert').removeClass('alert-danger')
-               .addClass('alert-success')
-               .html(`<p>Uploaded ${n} file(s)<p>`)
-               .slideDown();
+    diplaySuccess(`Uploaded ${n} file(s)`);
     loadFiles();
   } catch(err) {
     console.error(err);
+  } finally {
+    $('#button-div').slideDown();
+    $('#loading-div').slideUp();
   }
 }
 
+/**
+ * Get presign URL 
+ */
 async function getPresignedUrl(data) {
   try { 
     const res = await fetch('/file-operations/presign-url', { 
@@ -140,6 +171,9 @@ async function getPresignedUrl(data) {
   }
 }
 
+/**
+ * Upload file to S3
+ */
 async function sendToS3(presignedUrl, file) {
   const res = await fetch(presignedUrl, {method: 'PUT', body: file});
   if (res.statusText != 'OK') {
@@ -149,6 +183,9 @@ async function sendToS3(presignedUrl, file) {
   return res;
 }
 
+/**
+ * Break down a file into chunks 
+ */
 function createChunks(file, chunkSize) {
   // chunkSize should be in byte 1024*1 = 1KB 
   let startPointer = 0;
@@ -162,38 +199,60 @@ function createChunks(file, chunkSize) {
   return chunks;
 }
 
+/**
+ * Upload a large file in chunks using mutiplpart upload
+ */
 async function startLargeUpload() {
-  hideError();
+  hideError(); 
   const largeFile = elem('largeFile')
   const files = largeFile.files
   if (!files.length) {
-    displayError({ statusText: 'No file selected!'})
+    displayError({ message: 'No file selected!'})
     return;
   }
   const file = files[0];
   const {type, name, size} = file;
-  const  chunkSize = (1024 * 1000) * 5 // 5MB
+  const  chunkSize = (1024 * 1000) * 10 // 10MB
   const chunks = createChunks(file, chunkSize);
   const chunkLength = chunks.length;
-  const data = await getChuckPresignedUrls({type, name, size}, chunkLength);
-  const { uploadId, signedUrls } = data;
-  const uploads = []
-  for (let i = 0; i < chunks.length; i++) {
-    const signedUrl = signedUrls[i].signedUrl;
-    const chunk = chunks[i]
-    uploads.push(fetch(signedUrl, {method: 'PUT', body: chunk})); 
+  if (chunkLength < 3) {
+    const mbSize = Math.round(size / (1024 * 1000));
+    displayError({ message: `File size of ${mbSize}MB is too small for multipart upload!`})
+    return;
   }
-  const results = await Promise.all(uploads);
-  const parts = results.map((result, i) => {
-     const ETag = result.headers.get('ETag') || result.headers.get('etag') || result.headers.get('Etag');
-     return {
-      ETag,
-      PartNumber: signedUrls[i].partNumber,
-     }
-  });
-  const data2  = await completeLargeUpload(uploadId, {type, name, size}, parts);
+  $('#button-div').slideUp();
+  $('#loading-div').slideDown();
+  try {
+    const data = await getChuckPresignedUrls({type, name, size}, chunkLength);
+    const { uploadId, signedUrls } = data;
+    const uploads = []
+    for (let i = 0; i < chunks.length; i++) {
+      const signedUrl = signedUrls[i].signedUrl;
+      const chunk = chunks[i]
+      uploads.push(fetch(signedUrl, {method: 'PUT', body: chunk})); 
+    }
+    const results = await Promise.all(uploads);
+    const parts = results.map((result, i) => {  
+      const ETag = result.headers.get('ETag');
+      return {
+        ETag,
+        PartNumber: signedUrls[i].partNumber,
+      }
+    });
+    const result = await completeLargeUpload(uploadId, {type, name, size}, parts);  
+    diplaySuccess('Multipart upload was usccessful');
+  } catch(err) {
+    console.error(err);
+    displayError(error);
+  } finally {
+    $('#button-div').slideDown();
+    $('#loading-div').slideUp();
+  }
 }
 
+/**
+ * Get presigned URL for multipart chunk upload
+ */
 async function getChuckPresignedUrls(fileInfo, chunkLength) {
   const response = await fetch('/file-operations/large-presigned-urls', { 
     method: 'POST', 
@@ -212,6 +271,9 @@ async function getChuckPresignedUrls(fileInfo, chunkLength) {
   return response.json();
 }
 
+/**
+ * Finilize the upload of chunks using multipart upload
+ */
 async function completeLargeUpload(uploadId, fileInfo, parts) {
   const response = await fetch('/file-operations/large-upload-complete', {
     method: 'POST', 

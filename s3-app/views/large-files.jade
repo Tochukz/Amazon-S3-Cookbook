@@ -9,6 +9,8 @@ block content
       .col-sm-6 
         .form-group
           input( onchange="checkForFile(event)" type="file" id="largeFile" class="form-control")
-        .form-group
-          button(onclick="startLargeUpload()", class="btn btn-primary") Start Large Uploads
+        #button-div.form-group
+          button(onclick="startLargeUpload()", class="btn btn-primary" id="") Start Large Uploads
+        #loading-div.text-center
+          img(src='/img/loading.gif')
 

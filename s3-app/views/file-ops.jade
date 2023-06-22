@@ -13,8 +13,10 @@ block content
           input(type='file' class='form-control' id="file2" onchange="checkForFile(event)")
         .form-group
           input(type='file' class='form-control' id="file3" onchange="checkForFile(event)")
-        .form-group
+        #button-div.form-group
           button(class='btn btn-primary form-control' onclick="uploadToS3()") Upload Files
+        #loading-div.text-center
+          img(src='/img/loading.gif')
       .col-sm-6        
         table(class='table')
           thead 
