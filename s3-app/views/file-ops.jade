@@ -5,25 +5,32 @@ block content
     .row 
       .col-sm-12
         h1= title
-        p AWS S3 #{title}
-        div(class='alert' id='alert' style='display:none') Error Message
+        p AWS S3 App #{title}        
       .col-sm-6
-        .form-inline(class='mb-2')
+        .form-group
           input(type='file' class='form-control' id="file1" onchange="checkForFile(event)")
+        .form-group
           input(type='file' class='form-control' id="file2" onchange="checkForFile(event)")
+        .form-group
           input(type='file' class='form-control' id="file3" onchange="checkForFile(event)")
-          button(class='btn btn-primary' onclick="uploadToS3()") Upload Files
+        .form-group
+          button(class='btn btn-primary form-control' onclick="uploadToS3()") Upload Files
+      .col-sm-6        
         table(class='table')
           thead 
             tr 
               th Name 
+              th Display
               th Size 
               th Last Modified 
               th x
           tbody(id='tbody')
-      .col-sm-6 
+        p Click on file name or display button to see file content in frame below
+      .col-sm-12
         h3 Selected File
         iframe#frame
 
-          
-        
+  script.
+    $(document).ready(function() {
+      loadFiles();
+    });

@@ -1,0 +1,14 @@
+extend layout 
+
+block content 
+  .container-fluid 
+    .row 
+      .col-sm-12
+        h1= title
+        p AWS S3 #{title}
+      .col-sm-6 
+        .form-group
+          input( onchange="checkForFile(event)" type="file" id="largeFile" class="form-control")
+        .form-group
+          button(onclick="startLargeUpload()", class="btn btn-primary") Start Large Uploads
+

@@ -23,7 +23,7 @@ router.get('/files', async function (req, res, next) {
 });
 
 router.post('/api-upload', function(req, res, next) {
-
+  //Todo: Try direct upload from backend.
 });
 
 router.get('/signed-url', async function(req, res, next)  {
@@ -53,6 +53,33 @@ router.post('/presign-url', async function(req, res, next) {
   res.status(201).json(result);
   } catch(err) {
     next(err);
+  }
+});
+
+router.get('/large-files', async (req, res, next) => {
+  return res.render('large-files', {title: 'Large Files'});
+});
+
+router.post('/large-presigned-urls', async (req, res, next) => {
+  try {
+  const {chunkLength, file} = req.body;
+  const data = await fileService.startMultipartUpload(file);  
+  const { UploadId: uploadId, Key: key} = data;
+  const signedUrls = await fileService.getMultipartUrls(key, uploadId, chunkLength);
+  return res.json({ uploadId, key, signedUrls});
+  } catch(err) {
+    return next(err);
+  }
+});
+
+router.post('/large-upload-complete', async(req, res, next) => {
+  try {
+    const { uploadId, file, parts } = req.body; 
+    const response = await fileService.completeLargeUpload(uploadId, file, parts)
+    console.log('complete response', response);
+    return res.json(response);
+  } catch(err) {
+    return next(err);
   }
 });
 

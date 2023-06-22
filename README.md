@@ -401,3 +401,21 @@ To learn more about changing the cache behavior, checkout [CloudFront Developer 
 ## Express App with AWS S3
 [AWS SDK V3 API Reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/)  
 [AWS SDK V3 Repo](https://github.com/aws/aws-sdk-js-v3)
+
+#### Reducing latency by using transfer acceleration
+By using S3 transfer acceleration, your application can take advantage of the globally distributed edge locations in Amazon CloudFront.
+
+To allow accelerated enable transfer acceleration for existing S3 bucket
+```
+$ aws s3api put-bucket-accelerate-configuration --bucket tochukwu1-bucket --accelerate-configuration Status=Enabled
+```  
+
+### ETags headers  
+The ETags headers from S3 API call responses are hidden by default. You may need the ETag for certain operation, for example when you want to upload a large file using the multipart upload approach. 
+To expose ETags headers in response header, you may need to update the bucket's  CORS policy
+```
+$ aws s3api put-bucket-cors --bucket tochukwu1-bucket --cors-configuration file://config/cors.json
+```
+
+### Learn more
+[Uploading large objects to Amazon S3](https://aws.amazon.com/blogs/compute/uploading-large-objects-to-amazon-s3-using-multipart-upload-and-transfer-acceleration/)

@@ -2,6 +2,8 @@ const { S3 } = require('aws-sdk');
 const { param } = require('../routes');
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET, } = process.env;
+const Prefix = 'S3App-uploads';
+
 class FileService {
   s3 = null;
 
@@ -10,9 +12,13 @@ class FileService {
       accessKeyId: AWS_ACCESS_KEY_ID,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
       signatureVersion: 'v4',
+      useAccelerateEndpoint: true, // enable transfer acceleration in the S3 bucket to use this
     });
   }
 
+  /**
+   * Setup parameters for the signed URL to be generated. 
+   */
   getParams(updateParams = {}) {
     const params = {
       Bucket: S3_BUCKET,
@@ -25,8 +31,10 @@ class FileService {
     return params;
   }
 
+  /**
+   * List all files in the bucket with a specific prefix
+   */
   async listFiles() {
-    const Prefix = 'S3App-uploads';
     return new Promise((resolve, reject) => {
       this.s3.listObjects({ Bucket: S3_BUCKET, Prefix }, (err, data) => {
         if (err) {
@@ -38,12 +46,18 @@ class FileService {
     });
   }
 
+  /**
+   * Generates signed URL to access a specific existing file
+   */
   async getSignedUrl(Key) {
     const params = this.getParams({ Key });
     const signedUrl = await this.s3.getSignedUrlPromise('getObject', params);
     return { signedUrl };
   }
 
+  /**
+   * Generates signed URL to use a new file
+   */
   async getPresignedUrl(Key, ContentType) {
     const params = this.getParams({Key, ContentType});
     const signedUrl = await this.s3.getSignedUrlPromise('putObject', params);
@@ -60,17 +74,22 @@ class FileService {
       ext = 'jpg';
     } else if (type == 'image/png') {
       ext = 'png';
+    } else  {
+      ext = 'zip'
     }
     return ext;
   }
 
-  async getMultiPresingedUrl(files, prefix) {
+  getKey(file) {
+    const { name, size, type} = file;
+    const ext = this.getFileExt(type);
+    const nameOnly = name.substring(0, name.lastIndexOf('.'));
+    return `${Prefix}/${nameOnly}.${ext}`
+  }
+
+  async getMultiPresingedUrl(files) {
     for(let file of files) {
-      const ext = this.getFileExt(file.type);
-      const prefix = 'S3App-uploads';
-      const filename = file.name
-      const nameOnly = file.name.substring(0, filename.lastIndexOf('.'));
-      const key = `${prefix}/${nameOnly}.${ext}`;
+      const key = this.getKey(file)
       const result = await this.getPresignedUrl(key, file.type);
       file.ext = ext;
       file.url = key;
@@ -78,6 +97,64 @@ class FileService {
       file.signedUrl = result.signedUrl
     }
     return files;
+  }
+
+  async getMultipartUrls(key, uploadId, chunkLength) {
+    const multipartParams = {
+      Bucket: S3_BUCKET,
+      Key: key,
+      UploadId: uploadId,
+      Expires: 10 * 60,
+    }
+    const promises = []
+    for (let i = 0; i < chunkLength; i++) {
+      promises.push(
+        this.s3.getSignedUrlPromise("uploadPart", {
+          ...multipartParams,
+          PartNumber: i + 1,         
+        }),
+      )
+    }
+    const signedUrls = await Promise.all(promises);
+    return signedUrls.map((signedUrl, i) => ({ signedUrl, partNumber: i + 1}));
+  }
+
+  async startMultipartUpload(file) {
+    const key = this.getKey(file);
+    const params = {
+      Bucket: S3_BUCKET,
+      Key: key,
+      ContentType: file.type,
+      Expires: 10 * 60,
+    }
+    return new Promise((resolve, reject) => {
+      this.s3.createMultipartUpload(params, (err, data) => {                
+        if (err) {        
+          reject(err);
+        }        
+        resolve(data);
+      });
+    });    
+  }
+
+  async completeLargeUpload(uploadId, file, parts) {
+    const key = this.getKey(file);   
+    const params = {
+      Bucket: S3_BUCKET,
+      Key: key,
+      UploadId: uploadId,
+      MultipartUpload: { 
+        Parts: parts
+      }
+    }
+    return new Promise((resolve, reject)=> {
+      this.s3.completeMultipartUpload(params, (err, data) => {
+        if (err) {
+          reject(err);
+        }   
+        resolve(data);
+      });
+    })    
   }
 }
 
